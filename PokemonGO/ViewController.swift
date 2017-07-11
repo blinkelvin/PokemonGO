@@ -48,7 +48,6 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         Alamofire.request("http://pokeapi.co/api/v2/pokemon-form/" + String(pokeindex) + "/").responseJSON { response in
             if let json = response.result.value as? [String:AnyObject] {
                 completionBlock((json["sprites"]!["front_default"] as? String)!, nil)
-                self.pokeindex += 1
             }else{
                 completionBlock("", NSError.init(domain: "domain", code: (response.response?.statusCode)!, userInfo: nil) as NSError?)
             }
@@ -66,18 +65,15 @@ class ViewController: UIViewController, MKMapViewDelegate, CLLocationManagerDele
         if annotation is MKUserLocation{
             anotacaoView.image = #imageLiteral(resourceName: "player")
         }else{
-            self.request({ (result, error) in
-                if error == nil{
-                    ImageDownloader.default.downloadImage(with: URL(string: result)!, options: [], progressBlock: nil) {
-                        (image, error, url, data) in
-                        anotacaoView.image = image
-                    }
-                }
-            })
+            self.pokeindex += 1
+            ImageDownloader.default.downloadImage(with: URL(string: "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/" + String(pokeindex) + ".png")!, options: [], progressBlock: nil) {
+                (image, error, url, data) in
+                anotacaoView.image = image
+            }
         }
         
-        anotacaoView.frame.size.height = 40
-        anotacaoView.frame.size.width = 40
+        anotacaoView.frame.size.height = 30
+        anotacaoView.frame.size.width = 30
         
         return anotacaoView
     }
